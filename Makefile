@@ -14,6 +14,7 @@ remote_ovf_url	 = "$(shell yq .remote_ovf_url $(params_yaml))"
 ssh_authorized_keys = $(shell yq --output-format json .ssh.authorized_keys $(params_yaml))
 
 workers =  "$(shell yq .cluster.workers $(params_yaml))"
+krustlets =  "$(shell yq .cluster.krustlets $(params_yaml))"
 
 cpus			= "$(shell yq .node.cpus $(params_yaml))"
 memory		= "$(shell yq .node.memory $(params_yaml))"
@@ -21,7 +22,7 @@ disk_size = "$(shell yq .node.disk_size $(params_yaml))"
 
 vsphere_server    = "$(shell yq .vsphere.server $(params_yaml))"
 vsphere_username  = "$(shell yq .vsphere.username $(params_yaml))"
-vsphere_password  = "$(shell yq .vsphere.password $(params_yaml))" 
+vsphere_password  = "$(shell sops --decrypt --extract '["vsphere"]["password"]' $(params_yaml))"
 
 vsphere_datacenter		= "$(shell yq .vsphere.datacenter $(params_yaml))"
 vsphere_cluster				= "$(shell yq .vsphere.cluster $(params_yaml))"
