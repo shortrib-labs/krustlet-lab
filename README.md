@@ -1,18 +1,15 @@
-# vSphere kURL Cluster
+# vSphere Krustlet Cluster
 
-Easily create a Kubernetes cluster on vSphere using [kURL](https://kurl.sh)
-and [Terraform](https://terraform.io)
+Easily create a Kubernetes cluster on vSphere that runs WebAssembly workloads.
+Uses [kURL](https://kurl.sh), [Terraform](https://terraform.io), and
+[Krustlet](https://krustlet.dev).
 
 ## Goals and Audience
 
-I created this project as a simple way to spin up a single-node
-cluster on my home lab so that I could play with [KOTS](https://kots.io).
-As I worked with it, I realized I could use to create multi-node
-clusters or to install KOTS software using an embedded clusters.
-
-The initial audience was me and my peers at Replicated, but I think
-anyone working needing small clusters in a Lab environment could find
-it use full.
+I created this project as a simple way to spin up a clsuter with Krustlet nodes
+to learn more about WebAssembley workloads. The initial audience was me, but I
+imagine it could be usefult to anyone wwanting to learn more about the
+intersection of Kubernetes and WebAssembly.
 
 ## Requirements
 
@@ -24,7 +21,7 @@ it use full.
 * Make
 * Terraform
 * Direnv
-* Python (for secrets management, see below)
+* SOPS (for secrets management, see below)
 * GPG (also fro secrets management)
 
 ## Customizing for Your Environment
@@ -38,22 +35,24 @@ to connect to your cluster, specify the size of your node, etc.
 
 ## Creating a Cluster
 
-The cluster is created using [Terraform](https://terraform.io), but
-there's `Makefile` to make basic operations easier. Creating a
-cluster with the latest versions from kURL is as simple as
+The cluster is created using [Terraform](https://terraform.io), but there's a
+`Makefile` to make basic operations easier. Creating a cluster with the latest
+versions from kURL is as simple as
 
 ```shell
 $ make cluster
 ```
 
 The output at the end will show the IP address for your control plane node so
-that you can connect to it.
+that you can connect to it. It will also download a kubeconfig and set `direnv`
+will set `$KUBECONFIG` to point to that file.
 
-By default, the node is created as a multi-node cluster with
-the latest kURL installer. The cluster has as single control plane
-node and 2 workers. To use a custom kURL installer, 
-including a KOTS install with an embedded cluster, set the 
-variable `kurl_script`, for example, to use the latest k3s:
+By default, the node is created as a multi-node cluster with a single-node
+control plane, 2 tradiitional Kubernetes workers, and one Krustlet node.
+installer. The kURL installer is defined in the file `kurl-installer.yaml` and
+has only a couple of variables from the default `latest` installl. To use a
+custom kURL installer, including a KOTS install with an embedded cluster, set
+the variable `kurl_script`, for example, to use the latest k3s:
 
 ```shell
 $ make node kurl_script="curl https://kurl.sh/k3s | sudo bash"
